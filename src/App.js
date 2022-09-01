@@ -1,23 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+
+import React, { useEffect, useState } from "react";
+
+import { ExchangeCalculator } from "./Components/ExchangeCalculator";
+import { ExchangeTable } from "./Components/ExchangeTable";
+import { Header } from "./Components/Header";
+import axios from "axios";
+import logo from "./logo.svg";
 
 function App() {
+  const [usd, setUsd] = useState(0);
+  const [eur, setEur] = useState(0);
+  const [exchanges, setExchanges] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json")
+      .then((response) => {
+        setExchanges(response.data);
+        setUsd(
+          response.data
+            .find((currency) => currency.r030 === 840)
+            .rate.toFixed(2)
+        );
+        setEur(
+          response.data
+            .find((currency) => currency.r030 === 978)
+            .rate.toFixed(2)
+        );
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header usd={usd} eur={eur} />
+      <ExchangeCalculator currency={exchanges} />
+      <ExchangeTable exchanges={exchanges} />
     </div>
   );
 }
