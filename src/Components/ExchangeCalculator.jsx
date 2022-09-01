@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 export const ExchangeCalculator = ({ currency }) => {
-  const [leftValue, setLeftValue] = React.useState("0.00");
-  const [rightValue, setRightValue] = React.useState("0.00");
-  const [leftRate, setLeftRate] = React.useState(1);
-  const [rightRate, setRightRate] = React.useState(1);
+  const [leftValue, setLeftValue] = useState("0.00");
+  const [rightValue, setRightValue] = useState("0.00");
+  const [leftRate, setLeftRate] = useState(1);
+  const [rightRate, setRightRate] = useState(1);
 
-  //Get exchange rate data from API
-
-  //If either rate changes, recalculate right input value
   useEffect(() => {
     let currencyIn = leftValue;
     let currencyOut = CalculateExchange(
@@ -19,7 +16,6 @@ export const ExchangeCalculator = ({ currency }) => {
     setRightValue(currencyOut);
   }, [leftRate, rightRate]);
 
-  //If either input changes, recalculate opposite input value
   const HandleInput = (event) => {
     const currencyIn = event.target.value == "." ? "0." : event.target.value;
     if (isNaN(currencyIn)) {
