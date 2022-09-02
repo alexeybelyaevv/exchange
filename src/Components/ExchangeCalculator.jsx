@@ -12,10 +12,10 @@ export const ExchangeCalculator = ({ currency }) => {
 
   const changedValue = (position, value) => {
     if (position === "top") {
-      setBottomValue(format((Number(value) * bottomRate) / topRate));
+      setBottomValue(format((Number(value) * topRate) / bottomRate));
       setTopValue(Number(value));
     } else {
-      setTopValue(format((Number(value) * topRate) / bottomRate));
+      setTopValue(format((Number(value) * bottomRate) / topRate));
       setBottomValue(Number(value));
     }
   };
