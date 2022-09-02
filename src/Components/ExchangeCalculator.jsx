@@ -1,63 +1,43 @@
 import React, { useEffect, useState } from "react";
 
 export const ExchangeCalculator = ({ currency }) => {
-  const [leftValue, setLeftValue] = useState("0.00");
-  const [rightValue, setRightValue] = useState("0.00");
-  const [leftRate, setLeftRate] = useState(1);
-  const [rightRate, setRightRate] = useState(1);
+  const [topValue, setTopValue] = useState();
+  const [bottomValue, setBottomValue] = useState();
+  const [topRate, setTopRate] = useState(1);
+  const [bottomRate, setBottomRate] = useState(1);
 
-  useEffect(() => {
-    let currencyIn = leftValue;
-    let currencyOut = CalculateExchange(
-      currencyIn,
-      leftRate,
-      rightRate
-    ).toFixed(2);
-    setRightValue(currencyOut);
-  }, [leftRate, rightRate]);
+  const format = (number) => {
+    return number.toFixed(4);
+  };
 
-  const HandleInput = (event) => {
-    const currencyIn = event.target.value == "." ? "0." : event.target.value;
-    if (isNaN(currencyIn)) {
-      return;
+  const changedValue = (position, value) => {
+    if (position === "top") {
+      setBottomValue(format((Number(value) * bottomRate) / topRate));
+      setTopValue(Number(value));
+    } else {
+      setTopValue(format((Number(value) * topRate) / bottomRate));
+      setBottomValue(Number(value));
     }
-
-    const isLeft = event.target.id == "leftValue";
-
-    const [rateIn, rateOut] = isLeft
-      ? [leftRate, rightRate]
-      : [rightRate, leftRate];
-    const currencyOut = CalculateExchange(currencyIn, rateIn, rateOut).toFixed(
-      2
-    );
-
-    const [leftOutput, rightOutput] = isLeft
-      ? [currencyIn, currencyOut]
-      : [currencyOut, currencyIn];
-    setLeftValue(leftOutput);
-    setRightValue(rightOutput);
   };
 
-  const HandleLeftSelect = (event) => {
-    setLeftRate(event.target.value);
-  };
-
-  const HandleRightSelect = (event) => {
-    setRightRate(event.target.value);
-  };
-
-  const HandleFocus = (event) => {
-    event.target.select();
-  };
-
-  const CalculateExchange = (currencyIn, rateIn, rateOut) => {
-    return (currencyIn / rateIn) * rateOut;
+  const changedRate = (position, value) => {
+    if (position === "top") {
+      setBottomValue(format((Number(bottomValue) * bottomRate) / value));
+      setTopRate(value);
+    } else {
+      setTopValue(format((Number(topValue) * topRate) / value));
+      setBottomRate(value);
+    }
   };
 
   return (
     <div id="exchange">
-      <div class="row">
-        <select id="leftSelect" onChange={HandleLeftSelect}>
+      <div className="row">
+        <select
+          onChange={(e) => {
+            changedRate("top", e.target.value);
+          }}
+        >
           <option value={1}>Гривня</option>
           {currency.map((item, key) => {
             return (
@@ -68,14 +48,18 @@ export const ExchangeCalculator = ({ currency }) => {
           })}
         </select>
         <input
-          id="leftValue"
-          value={leftValue}
-          onInput={HandleInput}
-          onFocus={HandleFocus}
+          value={topValue}
+          onInput={(e) => {
+            changedValue("top", e.target.value.replace(/\D/g, ""));
+          }}
         ></input>
       </div>
-      <div class="row">
-        <select id="rightSelect" onChange={HandleRightSelect}>
+      <div className="row">
+        <select
+          onChange={(e) => {
+            changedRate("bottom", e.target.value);
+          }}
+        >
           <option value={1}>Гривня</option>
           {currency.map((item, key) => {
             return (
@@ -86,10 +70,10 @@ export const ExchangeCalculator = ({ currency }) => {
           })}
         </select>
         <input
-          id="rightValue"
-          value={rightValue}
-          onInput={HandleInput}
-          onFocus={HandleFocus}
+          value={bottomValue}
+          onInput={(e) => {
+            changedValue("bottom", e.target.value.replace(/\D/g, ""));
+          }}
         ></input>
       </div>
     </div>

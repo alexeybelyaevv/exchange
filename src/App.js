@@ -5,37 +5,31 @@ import React, { useEffect, useState } from "react";
 import { ExchangeCalculator } from "./Components/ExchangeCalculator";
 import { ExchangeTable } from "./Components/ExchangeTable";
 import { Header } from "./Components/Header";
-import axios from "axios";
-import logo from "./logo.svg";
+import useAxios from "./hooks/useAxios";
 
 function App() {
-  const [usd, setUsd] = useState(0);
-  const [eur, setEur] = useState(0);
+  const { response, loading } = useAxios();
   const [exchanges, setExchanges] = useState([]);
+  const [eur, setEur] = useState(0);
+  const [usd, setUsd] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json")
-      .then((response) => {
-        setExchanges(response.data);
-        setUsd(
-          response.data
-            .find((currency) => currency.r030 === 840)
-            .rate.toFixed(2)
-        );
-        setEur(
-          response.data
-            .find((currency) => currency.r030 === 978)
-            .rate.toFixed(2)
-        );
-      });
-  }, []);
+    if (response !== null) {
+      setExchanges(response);
+      setUsd(response.find((currency) => currency.r030 === 840).rate);
+      setEur(response.find((currency) => currency.r030 === 978).rate);
+    }
+  }, [response]);
+
+  if (loading) return <div>Loading</div>;
 
   return (
     <div>
-      <Header usd={usd} eur={eur} />
-      <ExchangeCalculator currency={exchanges} />
-      <ExchangeTable exchanges={exchanges} />
+      <>
+        <Header usd={usd} eur={eur} />
+        <ExchangeCalculator currency={exchanges} />
+        <ExchangeTable exchanges={exchanges} />
+      </>
     </div>
   );
 }

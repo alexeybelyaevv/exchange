@@ -1,6 +1,7 @@
 import React from "react";
 
 export const Header = ({ usd, eur }) => {
+  debugger;
   return (
     <div className="header">
       <h3>Обмінник</h3>
