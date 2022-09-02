@@ -22,11 +22,11 @@ export const ExchangeCalculator = ({ currency }) => {
 
   const changedRate = (position, value) => {
     if (position === "top") {
-      setBottomValue(format((Number(bottomValue) * bottomRate) / value));
-      setTopRate(value);
-    } else {
-      setTopValue(format((Number(topValue) * topRate) / value));
+      setTopValue(format((Number(bottomValue) / value) * bottomRate));
       setBottomRate(value);
+    } else {
+      setBottomValue(format((Number(topValue) / value) * topRate));
+      setTopRate(value);
     }
   };
 
